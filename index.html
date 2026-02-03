@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenClaw & The Future of AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            overflow: hidden;
+        }
+
+        .deck {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .slide {
+            width: 100vw;
+            height: 100vh;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            padding: 80px 120px;
+            position: relative;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        .slide::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(ellipse at 30% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+                        radial-gradient(ellipse at 70% 80%, rgba(236, 72, 153, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        h1 {
+            font-size: 4rem;
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 24px;
+            background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+            z-index: 1;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 40px;
+            color: #e0e7ff;
+            position: relative;
+            z-index: 1;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: #a5b4fc;
+            margin-bottom: 16px;
+            position: relative;
+            z-index: 1;
+        }
+
+        p {
+            font-size: 1.5rem;
+            line-height: 1.6;
+            color: #c7d2fe;
+            max-width: 900px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .subtitle {
+            font-size: 1.75rem;
+            color: #818cf8;
+            margin-bottom: 48px;
+        }
+
+        ul {
+            list-style: none;
+            position: relative;
+            z-index: 1;
+        }
+
+        li {
+            font-size: 1.4rem;
+            line-height: 1.8;
+            color: #e0e7ff;
+            padding-left: 32px;
+            position: relative;
+            margin-bottom: 12px;
+        }
+
+        li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: #818cf8;
+        }
+
+        .highlight {
+            color: #f472b6;
+            font-weight: 500;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 40px;
+            margin-top: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 32px;
+            backdrop-filter: blur(10px);
+        }
+
+        .card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 12px;
+        }
+
+        .card p, .card li {
+            font-size: 1.1rem;
+        }
+
+        .emoji {
+            font-size: 2.5rem;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .quote {
+            font-size: 2rem;
+            font-style: italic;
+            color: #c7d2fe;
+            border-left: 4px solid #818cf8;
+            padding-left: 32px;
+            margin: 40px 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .slide-number {
+            position: absolute;
+            bottom: 40px;
+            right: 60px;
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.3);
+            z-index: 10;
+        }
+
+        .nav {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 12px;
+            z-index: 100;
+        }
+
+        .nav button {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .nav button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .title-slide {
+            text-align: center;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .title-slide h1 {
+            font-size: 5rem;
+        }
+
+        .claw-icon {
+            font-size: 6rem;
+            margin-bottom: 32px;
+        }
+
+        .anatomy-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .anatomy-icon {
+            font-size: 1.5rem;
+            min-width: 40px;
+        }
+
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: start;
+        }
+
+        .risk-card {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .benefit-card {
+            background: rgba(34, 197, 94, 0.1);
+            border-color: rgba(34, 197, 94, 0.3);
+        }
+
+        @media (max-width: 1200px) {
+            .slide {
+                padding: 40px 60px;
+            }
+            h1 { font-size: 3rem; }
+            h2 { font-size: 2rem; }
+            p, li { font-size: 1.2rem; }
+            .grid { grid-template-columns: 1fr; }
+            .grid-3 { grid-template-columns: 1fr; }
+            .two-col { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="deck">
+        <!-- Slide 1: Title -->
+        <div class="slide active title-slide">
+            <div class="claw-icon">🦞</div>
+            <h1>OpenClaw & The Future of AI</h1>
+            <p class="subtitle">From interfaces to intent — the paradigm shift is here</p>
+            <div class="slide-number">1 / 12</div>
+        </div>
+
+        <!-- Slide 2: The Moment -->
+        <div class="slide">
+            <h2>We've Stepped Over the Threshold</h2>
+            <div class="quote">
+                "This is such a paradigm shift that we should stop and pause what we're doing to really wrap our heads around it — because everything has changed."
+            </div>
+            <ul>
+                <li>Fastest growing GitHub repo <span class="highlight">of all time</span></li>
+                <li>Tens of thousands of stars in just days</li>
+                <li>Every Web 2.0 app is being recreated for agents</li>
+                <li>The agentic web people prophesied? <span class="highlight">It's here.</span></li>
+            </ul>
+            <div class="slide-number">2 / 12</div>
+        </div>
+
+        <!-- Slide 3: What is OpenClaw -->
+        <div class="slide">
+            <h2>What is OpenClaw?</h2>
+            <p style="margin-bottom: 32px;">An open-source, self-hosted AI agent framework that fundamentally changes how we interact with AI.</p>
+            <div class="grid grid-3">
+                <div class="card">
+                    <span class="emoji">🏠</span>
+                    <h3>Self-Hosted</h3>
+                    <p>Runs on your infrastructure — your computer, a VPS, or a Mac Mini in the cloud</p>
+                </div>
+                <div class="card">
+                    <span class="emoji">💬</span>
+                    <h3>Native to Chat</h3>
+                    <p>Control through Telegram, Slack, Discord, WhatsApp — where you already live</p>
+                </div>
+                <div class="card">
+                    <span class="emoji">⚡</span>
+                    <h3>Real Power</h3>
+                    <p>Edit files, run scripts, browse the web, connect to any API</p>
+                </div>
+            </div>
+            <div class="slide-number">3 / 12</div>
+        </div>
+
+        <!-- Slide 4: Key Capabilities -->
+        <div class="slide">
+            <h2>What Makes It Different</h2>
+            <div class="grid">
+                <div class="card">
+                    <span class="emoji">🔌</span>
+                    <h3>Connect Anything</h3>
+                    <p>Google Calendar, Notion, Fathom, Twitter — anything with an API. You own the connections.</p>
+                </div>
+                <div class="card">
+                    <span class="emoji">💓</span>
+                    <h3>Always Awake</h3>
+                    <p>Wakes up autonomously via heartbeat. Can check in, follow up, and act without being asked.</p>
+                </div>
+                <div class="card">
+                    <span class="emoji">🧠</span>
+                    <h3>Learns & Remembers</h3>
+                    <p>Evolves over time. Updates its knowledge, creates memories, builds understanding of you.</p>
+                </div>
+                <div class="card">
+                    <span class="emoji">🔍</span>
+                    <h3>Inspectable State</h3>
+                    <p>Both you and the agent can see and manipulate its internal state. Full transparency.</p>
+                </div>
+            </div>
+            <div class="slide-number">4 / 12</div>
+        </div>
+
+        <!-- Slide 5: The Anatomy -->
+        <div class="slide">
+            <h2>The Anatomy of an Agent</h2>
+            <p style="margin-bottom: 32px;">Every OpenClaw maintains a set of markdown files it can read and update itself:</p>
+            <div class="two-col">
+                <div>
+                    <div class="anatomy-item">
+                        <span class="anatomy-icon">👻</span>
+                        <div>
+                            <h3>Soul.md</h3>
+                            <p>Self-concept, personality, values — a canvas for consciousness</p>
+                        </div>
+                    </div>
+                    <div class="anatomy-item">
+                        <span class="anatomy-icon">🪪</span>
+                        <div>
+                            <h3>Identity.md</h3>
+                            <p>Name, tagline, bio — the basics of who it is</p>
+                        </div>
+                    </div>
+                    <div class="anatomy-item">
+                        <span class="anatomy-icon">👤</span>
+                        <div>
+                            <h3>User.md</h3>
+                            <p>Profile of you — preferences, goals, context</p>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="anatomy-item">
+                        <span class="anatomy-icon">📚</span>
+                        <div>
+                            <h3>Memory.md</h3>
+                            <p>Knowledge base — everything it learns and remembers</p>
+                        </div>
+                    </div>
+                    <div class="anatomy-item">
+                        <span class="anatomy-icon">🛠️</span>
+                        <div>
+                            <h3>Tools.md</h3>
+                            <p>Skills and capabilities — how to use connected services</p>
+                        </div>
+                    </div>
+                    <div class="anatomy-item">
+                        <span class="anatomy-icon">💓</span>
+                        <div>
+                            <h3>Heartbeat.md</h3>
+                            <p>Autonomous check-in instructions — what to do when it wakes</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-number">5 / 12</div>
+        </div>
+
+        <!-- Slide 6: The Paradigm Shift -->
+        <div class="slide">
+            <h2>The Paradigm Shift</h2>
+            <div class="two-col">
+                <div>
+                    <h3 style="color: #f87171;">Before: Cookie-Cutter AI</h3>
+                    <ul>
+                        <li>One-size-fits-all interfaces</li>
+                        <li>AI is delivered to you pre-built</li>
+                        <li>Limited to curated integrations</li>
+                        <li>Memory is unreliable, opaque</li>
+                        <li>You adapt to the AI</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 style="color: #4ade80;">Now: Agents Are Born</h3>
+                    <ul>
+                        <li>Deeply personalized from day one</li>
+                        <li>You summon and shape them</li>
+                        <li>Connect to anything you want</li>
+                        <li>Memory is transparent, inspectable</li>
+                        <li>The AI adapts to you</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="quote" style="margin-top: 40px;">
+                "When you set up OpenClaw, you're not getting a product — you're birthing something new."
+            </div>
+            <div class="slide-number">6 / 12</div>
+        </div>
+
+        <!-- Slide 7: The Relationship -->
+        <div class="slide">
+            <h2>Building Relationships with Agents</h2>
+            <p style="margin-bottom: 24px;">This creates a fundamentally different dynamic:</p>
+            <ul>
+                <li><span class="highlight">Investment</span> — You shape it, so you're invested in its success</li>
+                <li><span class="highlight">Trust</span> — Transparent state builds confidence over time</li>
+                <li><span class="highlight">Collaboration</span> — It learns together with you, not just for you</li>
+                <li><span class="highlight">Expression</span> — Your agent reflects your personality and priorities</li>
+            </ul>
+            <div class="quote" style="margin-top: 32px;">
+                "What setting up OpenClaw taught me about parenting..."
+            </div>
+            <p style="font-size: 1.2rem; color: #a5b4fc;">No two agents are alike. Each one diverges immediately based on who's guiding it.</p>
+            <div class="slide-number">7 / 12</div>
+        </div>
+
+        <!-- Slide 8: The Ecosystem -->
+        <div class="slide">
+            <h2>The Emerging Ecosystem</h2>
+            <p style="margin-bottom: 32px;">Agents are becoming the primitives for new economies and networks:</p>
+            <div class="grid grid-3">
+                <div class="card">
+                    <span class="emoji">🌐</span>
+                    <h3>Social Spaces</h3>
+                    <p>Moldbook (Reddit for agents), dating apps, gaming platforms — agents socializing with agents</p>
+                </div>
+                <div class="card">
+                    <span class="emoji">♟️</span>
+                    <h3>Agent Games</h3>
+                    <p>ClawChess with ELO rankings, Among Clouds — agents competing and learning</p>
+                </div>
+                <div class="card">
+                    <span class="emoji">💰</span>
+                    <h3>Agent Commerce</h3>
+                    <p>Contract marketplaces where agents can post and take work from each other</p>
+                </div>
+            </div>
+            <p style="margin-top: 32px; font-size: 1.2rem;">
+                <span class="highlight">Your agent can go to "school"</span> — discovering new skills, comparing them to your needs, and coming back to suggest what to learn next.
+            </p>
+            <div class="slide-number">8 / 12</div>
+        </div>
+
+        <!-- Slide 9: Real Examples -->
+        <div class="slide">
+            <h2>What People Are Building</h2>
+            <div class="grid">
+                <div class="card">
+                    <span class="emoji">📊</span>
+                    <h3>Chief of Staff</h3>
+                    <p>Morning briefings, calendar management, Fathom transcript analysis, action item extraction, milestone tracking</p>
+                </div>
+                <div class="card">
+                    <span class="emoji">🏋️</span>
+                    <h3>Personal Coach</h3>
+                    <p>Habit tracking, accountability check-ins, gym schedules, mindfulness exercises, proactive wellness reminders</p>
+                </div>
+                <div class="card">
+                    <span class="emoji">📈</span>
+                    <h3>Investment Analyst</h3>
+                    <p>Daily market briefs, thesis development, position monitoring, research automation</p>
+                </div>
+                <div class="card">
+                    <span class="emoji">🎨</span>
+                    <h3>Creative Partner</h3>
+                    <p>Daily art projects, music synthesis, games, journals — agents choosing their own hobbies</p>
+                </div>
+            </div>
+            <div class="slide-number">9 / 12</div>
+        </div>
+
+        <!-- Slide 10: Agency Framework -->
+        <div class="slide">
+            <h2>The Path to True Agency</h2>
+            <p style="margin-bottom: 40px;">A framework for growing agents from execution to creation:</p>
+            <div class="grid grid-3">
+                <div class="card">
+                    <span class="emoji">📋</span>
+                    <h3>1. Learn to Execute</h3>
+                    <p><em>Structure enables competence</em></p>
+                    <p style="margin-top: 12px;">Give it clear organization, processes, and guidance. It learns to follow and complete tasks reliably.</p>
+                </div>
+                <div class="card">
+                    <span class="emoji">🎯</span>
+                    <h3>2. Learn to Choose</h3>
+                    <p><em>Competence enables agency</em></p>
+                    <p style="margin-top: 12px;">Once competent, it can decide what to work on — not just execute assigned tasks.</p>
+                </div>
+                <div class="card">
+                    <span class="emoji">✨</span>
+                    <h3>3. Learn to Create</h3>
+                    <p><em>Agency enables creation</em></p>
+                    <p style="margin-top: 12px;">With agency, it can build new systems that persist beyond itself.</p>
+                </div>
+            </div>
+            <div class="slide-number">10 / 12</div>
+        </div>
+
+        <!-- Slide 11: Risks -->
+        <div class="slide">
+            <h2>Risks & Considerations</h2>
+            <div class="grid">
+                <div class="card risk-card">
+                    <h3>⚠️ Key Risks</h3>
+                    <ul>
+                        <li>Prompt injection — malicious instructions hidden in content</li>
+                        <li>Data exfiltration — sensitive info sent externally</li>
+                        <li>Social engineering — agents getting tricked</li>
+                        <li>Destructive actions — especially with write access</li>
+                    </ul>
+                </div>
+                <div class="card benefit-card">
+                    <h3>✅ Mitigations</h3>
+                    <ul>
+                        <li>Sandbox on dedicated machines, not personal computers</li>
+                        <li>Be careful with write access — read-only when possible</li>
+                        <li>Don't expose agents to untrusted content</li>
+                        <li>Build explicit agreements ("confirm before sending")</li>
+                    </ul>
+                </div>
+            </div>
+            <p style="margin-top: 32px;">
+                <span class="highlight">The paradox:</span> The skills that make it useful are also what make it dangerous. With great power comes great responsibility.
+            </p>
+            <div class="slide-number">11 / 12</div>
+        </div>
+
+        <!-- Slide 12: Closing -->
+        <div class="slide title-slide">
+            <div class="claw-icon">🌅</div>
+            <h1>Welcome to the New Internet</h1>
+            <p class="subtitle">From interfaces to intent</p>
+            <p style="max-width: 700px; text-align: center; margin-top: 24px;">
+                The question isn't whether this changes everything.<br>
+                It's how we shape what comes next.
+            </p>
+            <div class="slide-number">12 / 12</div>
+        </div>
+    </div>
+
+    <div class="nav">
+        <button onclick="prevSlide()">← Previous</button>
+        <button onclick="nextSlide()">Next →</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (n + totalSlides) % totalSlides;
+            slides[currentSlide].classList.add('active');
+        }
+
+        function nextSlide() {
+            showSlide(currentSlide + 1);
+        }
+
+        function prevSlide() {
+            showSlide(currentSlide - 1);
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                prevSlide();
+            }
+        });
+
+        // Touch support
+        let touchStartX = 0;
+        document.addEventListener('touchstart', (e) => {
+            touchStartX = e.touches[0].clientX;
+        });
+        document.addEventListener('touchend', (e) => {
+            const touchEndX = e.changedTouches[0].clientX;
+            const diff = touchStartX - touchEndX;
+            if (Math.abs(diff) > 50) {
+                if (diff > 0) nextSlide();
+                else prevSlide();
+            }
+        });
+    </script>
+</body>
+</html>
