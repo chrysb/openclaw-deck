@@ -19,11 +19,26 @@
             overflow: hidden;
         }
 
+        @media (max-width: 768px) {
+            body {
+                overflow: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+        }
+
         .deck {
             width: 100vw;
             height: 100vh;
             overflow: hidden;
             position: relative;
+        }
+
+        @media (max-width: 768px) {
+            .deck {
+                height: auto;
+                min-height: 100vh;
+                overflow: visible;
+            }
         }
 
         .slide {
@@ -37,8 +52,13 @@
             padding-bottom: 120px;
             position: relative;
             background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
+        }
+
+        @media (max-width: 768px) {
+            .slide {
+                position: relative;
+                overflow: visible;
+            }
         }
 
         .slide.active {
@@ -635,16 +655,21 @@
             }
         });
 
-        // Touch support
+        // Touch support - horizontal swipes only
         let touchStartX = 0;
+        let touchStartY = 0;
         document.addEventListener('touchstart', (e) => {
             touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
         });
         document.addEventListener('touchend', (e) => {
             const touchEndX = e.changedTouches[0].clientX;
-            const diff = touchStartX - touchEndX;
-            if (Math.abs(diff) > 50) {
-                if (diff > 0) nextSlide();
+            const touchEndY = e.changedTouches[0].clientY;
+            const diffX = touchStartX - touchEndX;
+            const diffY = touchStartY - touchEndY;
+            // Only trigger slide change if horizontal swipe is dominant
+            if (Math.abs(diffX) > 50 && Math.abs(diffX) > Math.abs(diffY) * 2) {
+                if (diffX > 0) nextSlide();
                 else prevSlide();
             }
         });
